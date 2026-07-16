@@ -1,0 +1,101 @@
+{
+  "app": {
+    "title": "CrewLink AI",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "offline": "You are offline. Showing last synced data."
+  },
+  "nav": {
+    "tasks": "Tasks",
+    "chat": "Chat",
+    "ask": "Ask CrewLink",
+    "supervisor": "Supervisor",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "auth": {
+    "login": "Log In",
+    "badgeCode": "Badge Code",
+    "pin": "PIN",
+    "loginError": "Invalid credentials. Please try again.",
+    "sessionExpired": "Session expired. Please log in again."
+  },
+  "task": {
+    "feed": "Task Feed",
+    "empty": "No tasks assigned to your zone.",
+    "status": {
+      "reported": "Reported",
+      "triaged": "Triaged",
+      "dispatched": "Dispatched",
+      "acknowledged": "Acknowledged",
+      "enRoute": "En Route",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "cancelled": "Cancelled",
+      "escalated": "Escalated"
+    },
+    "newTasks": "{count, plural, one {# new task} other {# new tasks}} added",
+    "highestPriority": "Highest priority: {priority}",
+    "ariaNewTask": "New: {category}, {zone}, {priority}"
+  },
+  "incident": {
+    "detail": "Incident Detail",
+    "category": "Category",
+    "location": "Location",
+    "description": "Description",
+    "source": "Source",
+    "actions": "Actions",
+    "acknowledge": "Acknowledge",
+    "resolve": "Resolve",
+    "escalate": "Escalate",
+    "confirmEscalate": "Are you sure you want to escalate?",
+    "notes": "Resolution notes",
+    "notesRequired": "Please enter resolution notes."
+  },
+  "chat": {
+    "title": "Chat Bridge",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "translating": "Translating...",
+    "detectedLanguage": "Detected: {language}",
+    "wrongLanguage": "Wrong? Tap to change.",
+    "sessionClosed": "This conversation has ended."
+  },
+  "ask": {
+    "title": "Ask CrewLink",
+    "placeholder": "Ask a question about facilities or procedures...",
+    "searching": "Looking that up...",
+    "noResults": "I couldn't find an answer in the venue guide. Please ask a supervisor or check at the information desk.",
+    "error": "Unable to search. Please try again."
+  },
+  "supervisor": {
+    "title": "Supervisor Dashboard",
+    "incidents": "Incidents",
+    "zones": "Zones",
+    "volunteers": "Volunteers"
+  },
+  "source": {
+    "simulated": "Simulated",
+    "volunteer": "Volunteer Reported",
+    "supervisor": "Supervisor Created"
+  },
+  "priority": {
+    "urgent": "Urgent",
+    "moderate": "Moderate",
+    "low": "Low"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  }
+}

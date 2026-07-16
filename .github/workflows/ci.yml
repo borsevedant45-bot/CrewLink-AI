@@ -1,0 +1,130 @@
+# .github/workflows/ci.yml
+# Doc #7 §6 — Merge-blocking CI pipeline.
+# Every job is required by branch protection on `main`.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────
+  # lint: ruff (backend) + tsc (frontend type-check as lint proxy)
+  # ──────────────────────────────────────────────────────────────────────
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -e "backend/.[dev]"
+      - run: npm ci --prefix frontend
+      - run: ruff check backend/
+      - name: Frontend lint (tsc --noEmit)
+        run: npx tsc --noEmit
+        working-directory: frontend
+
+  # ──────────────────────────────────────────────────────────────────────
+  # typecheck: mypy (backend) + tsc (frontend)
+  # ──────────────────────────────────────────────────────────────────────
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -e "backend/.[dev]"
+      - run: npm ci --prefix frontend
+      - run: mypy backend/ --strict
+      - run: npx tsc --noEmit -p frontend/
+
+  # ──────────────────────────────────────────────────────────────────────
+  # secret-scan: grep for leaked credentials in frontend dist
+  # Doc #6 §2 — "defense in depth: a lightweight secret-scanning step"
+  # ──────────────────────────────────────────────────────────────────────
+  secret-scan:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix frontend
+      - run: npm run build --prefix frontend
+      - name: Scan for secrets in shipped bundle
+        run: |
+          echo "Scanning frontend/dist for leaked credentials..."
+          ! grep -R -E "sk-ant-|DATABASE_URL=|JWT_SECRET|LLM_API_KEY|sim-service-token" frontend/dist 2>/dev/null || \
+            { echo "FAIL: Secret leaked into frontend bundle"; exit 1; }
+          echo "PASS: No secrets found in frontend bundle"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # unit: deterministic tests (no LLM calls)
+  # ──────────────────────────────────────────────────────────────────────
+  unit:
+    needs: [lint, typecheck]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -e "backend/.[dev]"
+      - run: npm ci --prefix frontend
+      - name: Backend unit tests (no LLM)
+        run: python -m pytest backend/tests/ -m "not llm" --maxfail=1 --tb=line -q
+      - name: Frontend unit tests
+        run: npx vitest run
+        working-directory: frontend
+      - name: Frontend a11y axe-core audit
+        run: npx vitest run tests/a11y.test.tsx tests/a11y-contrast.test.tsx tests/a11y-keyboard.test.tsx
+        working-directory: frontend
+
+  # ──────────────────────────────────────────────────────────────────────
+  # mocked-integration: docker-compose + integration + golden-set tests
+  # LLM_MODE=recorded means the provider-agnostic adapter replays fixtures,
+  # zero network calls.
+  # ──────────────────────────────────────────────────────────────────────
+  mocked-integration:
+    needs: [unit]
+    runs-on: ubuntu-latest
+    env:
+      LLM_MODE: recorded
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install -e "backend/.[dev]"
+      - name: Start test stack
+        run: docker compose -f docker-compose.test.yml up -d
+      - name: Integration tests (flows #1-#5)
+        run: python -m pytest backend/tests/integration/ --maxfail=1 --tb=line -q
+      - name: Golden-set tests (15-case set + translation extension)
+        run: python -m pytest backend/tests/test_phase6/test_golden_set.py backend/tests/test_phase7/test_golden_cases_11_12.py backend/tests/test_phase8/test_golden_cases_13_14_15.py backend/tests/test_phase10/test_translation_golden_set.py --maxfail=1 --tb=line -q
+      - name: Stop test stack
+        if: always()
+        run: docker compose -f docker-compose.test.yml down
+
+  # ──────────────────────────────────────────────────────────────────────
+  # build: verify docker-compose build succeeds
+  # ──────────────────────────────────────────────────────────────────────
+  build:
+    needs: [mocked-integration, secret-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose build

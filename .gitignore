@@ -1,0 +1,62 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.db
+*.sqlite3
+
+# ── Chroma vector store ──
+chroma_data/
+
+# ── Deployment data (persistent disk, local test) ──
+data/
+
+# ── Environment ──
+.env
+*.env.local
+!.env.example
+
+# ── Node / Frontend ──
+node_modules/
+frontend/dist/
+
+# ── Build artifacts ──
+dist/
+build/
+*.whl
+*.tar.gz
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── Testing ──
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+coverage/
+
+# ── Lint / Typecheck caches ──
+.ruff_cache/
+.mypy_cache/
+
+# ── Logs ──
+*.log
+
+# ── Docker ──
+.docker/
+
+# ── Misc ephemera ──
+tmp/
+temp/

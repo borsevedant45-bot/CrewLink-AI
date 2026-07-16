@@ -1,0 +1,61 @@
+# .gitleaks.toml — CrewLink AI secret-scan config (Doc #6 §2)
+# Matches the grep patterns in ci.yml's secret-scan job.
+# Install gitleaks: https://github.com/gitleaks/gitleaks
+
+title = "CrewLink AI secret scan"
+
+[allowlist]
+paths = [
+    ".gitleaks.toml",
+    ".gitignore",
+    ".env.example",
+    "README.md",
+    "docs/",
+    "node_modules/",
+    "__pycache__/",
+    ".mypy_cache/",
+    ".ruff_cache/",
+    "frontend/dist/",
+]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key (sk-ant-...)"
+regex = '''sk-ant-[A-Za-z0-9+/=]{40,}'''
+tags = ["api-key", "anthropic"]
+
+[[rules]]
+id = "database-url"
+description = "Database connection string"
+regex = '''DATABASE_URL=['\"].*['\"]'''
+tags = ["database", "credential"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT secret key"
+regex = '''JWT_SECRET_KEY=['\"].+['\"]'''
+tags = ["jwt", "auth"]
+
+[[rules]]
+id = "llm-api-key"
+description = "LLM provider API key"
+regex = '''LLM_(FAST|REASONING)_API_KEY=['\"].+['\"]'''
+tags = ["api-key", "llm"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key assignment"
+regex = '''(?i)(api[_-]?key|apikey|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-+/=]{20,}['"]'''
+tags = ["api-key", "generic"]
+
+[[rules]]
+id = "simulator-auth-token"
+description = "Simulator internal auth token (placeholder)"
+regex = '''sim-service-token-'''
+tags = ["internal-auth"]
+
+[[rules]]
+id = "private-key"
+description = "Private key header"
+regex = '''-----BEGIN (RSA |EC )?PRIVATE KEY-----'''
+tags = ["private-key"]

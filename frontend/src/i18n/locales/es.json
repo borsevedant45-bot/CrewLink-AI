@@ -1,0 +1,101 @@
+{
+  "app": {
+    "title": "CrewLink AI",
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Reintentar",
+    "offline": "Estás desconectado. Mostrando últimos datos sincronizados."
+  },
+  "nav": {
+    "tasks": "Tareas",
+    "chat": "Chat",
+    "ask": "Preguntar a CrewLink",
+    "supervisor": "Supervisor",
+    "settings": "Ajustes",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "badgeCode": "Código de identificación",
+    "pin": "PIN",
+    "loginError": "Credenciales inválidas. Inténtalo de nuevo.",
+    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo."
+  },
+  "task": {
+    "feed": "Lista de tareas",
+    "empty": "No hay tareas asignadas a tu zona.",
+    "status": {
+      "reported": "Reportado",
+      "triaged": "Clasificado",
+      "dispatched": "Despachado",
+      "acknowledged": "Confirmado",
+      "enRoute": "En camino",
+      "inProgress": "En progreso",
+      "resolved": "Resuelto",
+      "cancelled": "Cancelado",
+      "escalated": "Escalado"
+    },
+    "newTasks": "{count, plural, one {# tarea nueva} other {# tareas nuevas}} agregadas",
+    "highestPriority": "Prioridad máxima: {priority}",
+    "ariaNewTask": "Nueva: {category}, {zone}, {priority}"
+  },
+  "incident": {
+    "detail": "Detalle del incidente",
+    "category": "Categoría",
+    "location": "Ubicación",
+    "description": "Descripción",
+    "source": "Fuente",
+    "actions": "Acciones",
+    "acknowledge": "Confirmar",
+    "resolve": "Resolver",
+    "escalate": "Escalar",
+    "confirmEscalate": "¿Estás seguro de que quieres escalar?",
+    "notes": "Notas de resolución",
+    "notesRequired": "Por favor, introduce notas de resolución."
+  },
+  "chat": {
+    "title": "Chat",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "translating": "Traduciendo...",
+    "detectedLanguage": "Detectado: {language}",
+    "wrongLanguage": "¿Incorrecto? Toca para cambiar.",
+    "sessionClosed": "Esta conversación ha terminado."
+  },
+  "ask": {
+    "title": "Preguntar a CrewLink",
+    "placeholder": "Haz una pregunta sobre instalaciones o procedimientos...",
+    "searching": "Buscando...",
+    "noResults": "No encontré respuesta en la guía del recinto. Consulta a un supervisor o acude a la mesa de información.",
+    "error": "No se pudo realizar la búsqueda. Inténtalo de nuevo."
+  },
+  "supervisor": {
+    "title": "Panel de supervisor",
+    "incidents": "Incidentes",
+    "zones": "Zonas",
+    "volunteers": "Voluntarios"
+  },
+  "source": {
+    "simulated": "Simulado",
+    "volunteer": "Reportado por voluntario",
+    "supervisor": "Creado por supervisor"
+  },
+  "priority": {
+    "urgent": "Urgente",
+    "moderate": "Moderado",
+    "low": "Baja"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "toggle": "Cambiar tema"
+  },
+  "common": {
+    "back": "Atrás",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar"
+  }
+}

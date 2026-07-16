@@ -1,0 +1,66 @@
+# .github/workflows/live-model-eval.yml
+# Doc #7 §6 — Live model regression eval.
+# NEVER blocks a merge — workflow_dispatch + nightly schedule only.
+# Failures produce a reviewable artifact, never a failed CI status.
+name: Live Model Regression
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 6 * * *'  # nightly at 06:00 UTC
+
+jobs:
+  golden-set-live:
+    runs-on: ubuntu-latest
+    env:
+      LLM_MODE: live
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install -e "backend/.[dev]"
+
+      - name: Run golden-set with live model
+        id: golden_run
+        continue-on-error: true
+        run: |
+          python -m pytest \
+            backend/tests/test_phase6/test_golden_set.py \
+            backend/tests/test_phase7/test_golden_cases_11_12.py \
+            backend/tests/test_phase8/test_golden_cases_13_14_15.py \
+            backend/tests/test_phase10/test_translation_golden_set.py \
+            --report=live_eval_report.json \
+            --tb=line -q \
+            -v 2>&1 | tee golden_set_output.txt
+
+      - name: Generate report artifact
+        if: always()
+        run: |
+          if [ -f live_eval_report.json ]; then
+            echo "Report exists — attaching as artifact"
+          else
+            echo '{"error": "No report generated", "exit_code": ${{ steps.golden_run.outcome == 'failure' && '1' || '0' }}}' > live_eval_report.json
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-eval-report
+          path: |
+            live_eval_report.json
+            golden_set_output.txt
+          retention-days: 30
+
+      - name: Summarize results
+        if: always()
+        run: |
+          echo "## Live Model Regression Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f golden_set_output.txt ]; then
+            tail -20 golden_set_output.txt >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Artifact: live-eval-report (retained 30 days)" >> $GITHUB_STEP_SUMMARY
+          echo "This run NEVER blocks a merge — results are advisory." >> $GITHUB_STEP_SUMMARY

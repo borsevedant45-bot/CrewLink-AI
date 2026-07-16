@@ -1,0 +1,137 @@
+{
+  "app": {
+    "title": "CrewLink AI",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "offline": "You are offline. Showing last synced data."
+  },
+  "offline": {
+    "title": "Offline",
+    "description": "You are offline. Showing last-known data from before the connection was lost."
+  },
+  "nav": {
+    "tasks": "Tasks",
+    "chat": "Chat",
+    "ask": "Ask CrewLink",
+    "supervisor": "Supervisor",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "auth": {
+    "login": "Log In",
+    "badgeCode": "Badge Code",
+    "pin": "PIN",
+    "loginError": "Invalid credentials. Please try again.",
+    "sessionExpired": "Session expired. Please log in again."
+  },
+  "task": {
+    "feed": "Task Feed",
+    "empty": "No tasks assigned to your zone.",
+    "status": {
+      "reported": "Reported",
+      "triaged": "Triaged",
+      "dispatched": "Dispatched",
+      "acknowledged": "Acknowledged",
+      "enRoute": "En Route",
+      "inProgress": "In Progress",
+      "resolved": "Resolved",
+      "cancelled": "Cancelled",
+      "escalated": "Escalated"
+    },
+    "newTasks": "{count, plural, one {# new task} other {# new tasks}} added",
+    "highestPriority": "Highest priority: {priority}",
+    "ariaNewTask": "New: {category}, {zone}, {priority}"
+  },
+  "incident": {
+    "detail": "Incident Detail",
+    "category": "Category",
+    "location": "Location",
+    "description": "Description",
+    "source": "Source",
+    "actions": "Actions",
+    "acknowledge": "Acknowledge",
+    "enRoute": "En Route",
+    "resolve": "Resolve",
+    "statusUpdateError": "Failed to update status",
+    "escalate": "Escalate",
+    "confirmEscalate": "Are you sure you want to escalate?",
+    "notes": "Resolution notes",
+    "notesPlaceholder": "Describe how the incident was resolved...",
+    "notesRequired": "Please enter resolution notes.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "reauth": "Log in again",
+    "routeTitle": "Suggested Route",
+    "routeBody": "From your current zone to {zone}: proceed along the main concourse, follow signs toward {section}."
+  },
+  "chat": {
+    "title": "Chat Bridge",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "translating": "Translating...",
+    "detectedLanguage": "Detected: {language}",
+    "wrongLanguage": "Wrong? Tap to change.",
+    "sessionClosed": "This conversation has ended.",
+    "noSession": "No chat session selected.",
+    "noMessages": "No messages yet.",
+    "messages": "Messages",
+    "confidenceMedium": "Moderate confidence",
+    "confidenceLow": "Low confidence",
+    "fallbackUsed": "Translation unavailable",
+    "requestInterpreter": "Request human interpreter",
+    "requesting": "Requesting..."
+  },
+  "ask": {
+    "title": "Ask CrewLink",
+    "placeholder": "Ask a question about facilities or procedures...",
+    "searching": "Looking that up...",
+    "noResults": "I couldn't find an answer in the venue guide. Please ask a supervisor or check at the information desk.",
+    "error": "Unable to search. Please try again.",
+    "voiceInput": "Voice Input",
+    "voiceDisabled": "Voice input is not available in this version (Key Assumption 3: MVP is text-based; voice-to-voice is a stretch goal).",
+    "fallbackNextStep": "This answer was not verified against the venue guide. Please confirm with a supervisor or visit the information desk.",
+    "fallbackBadge": "Unverified",
+    "history": "Question and answer history"
+  },
+  "supervisor": {
+    "title": "Supervisor Dashboard",
+    "incidents": "Incidents",
+    "zones": "Zones",
+    "volunteers": "Volunteers",
+    "openIncidents": "Open Incidents",
+    "totalVolunteers": "Total Volunteers",
+    "available": "Available",
+    "density": "Crowd Density",
+    "crowdLow": "Low",
+    "crowdModerate": "Moderate",
+    "crowdHigh": "High",
+    "crowdCritical": "Critical",
+    "zoneCard": "{name}: {open} open incidents, {available}/{total} volunteers",
+    "loading": "Loading dashboard...",
+    "error": "Failed to load dashboard data",
+    "venueTotal": "Venue-wide open incidents: {count}"
+  },
+  "source": {
+    "simulated": "Simulated",
+    "volunteer": "Volunteer Reported",
+    "supervisor": "Supervisor Created"
+  },
+  "priority": {
+    "urgent": "Urgent",
+    "moderate": "Moderate",
+    "low": "Low"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  }
+}

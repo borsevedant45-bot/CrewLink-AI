@@ -1,0 +1,69 @@
+# path: render.yaml
+# Render Infrastructure-as-Code — Doc #2 §6
+#
+# Backend: Render Starter (paid) — persistent disk prevents the 15-min
+# spin-down + ephemeral-filesystem problem Risk #3 calls out.
+# Frontend: Render Static Site (free) — pure CDN, no spin-down concern.
+#
+# See README.md for the full deployment guide.
+
+services:
+  # ── Backend (FastAPI + embedded Chroma) ─────────────────────────────────
+  - type: web
+    name: crewlink-ai-backend
+    runtime: python
+    plan: starter
+    region: oregon
+    buildCommand: pip install -e "backend/."
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port 10000 --workers 2
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./data/crewlinai.db
+      - key: CHROMA_PERSIST_DIR
+        value: ./data/chroma_data
+      - key: DEBUG
+        value: "false"
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "480"
+      - key: LLM_FAST_API_KEY
+        sync: false
+      - key: LLM_REASONING_API_KEY
+        sync: false
+      - key: LLM_PROVIDER
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: SIMULATOR_AUTH_TOKEN
+        sync: false
+      - key: CREWLINK_VENUE_CODE
+        value: founders_field
+    disk:
+      name: crewlink-persistent-data
+      mountPath: /app/backend/data
+      sizeGB: 1
+
+  # ── Frontend (React PWA — static site) ──────────────────────────────────
+  - type: web
+    name: crewlink-ai-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://crewlink-ai-backend.onrender.com/api/v1
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, immutable, max-age=31536000
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

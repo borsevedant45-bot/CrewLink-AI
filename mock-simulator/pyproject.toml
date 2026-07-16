@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mock-simulator"
+version = "0.1.0"
+description = "CrewLink AI — Mock Real-Time Data Simulator (Phase 3)"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28.0",
+    "pydantic>=2.10.0",
+]
+
+[tool.setuptools]
+packages = ["mock_simulator", "mock_simulator.app", "mock_simulator.app.generators"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "mypy>=1.13.0",
+    "ruff>=0.8.0",
+    "pydantic>=2.10.0",
+]
+
+[tool.mypy]
+strict = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "ARG"]

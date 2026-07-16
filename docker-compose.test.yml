@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  test-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - CREWLINK_DATABASE_URL=sqlite:///file::memory:?cache=shared
+      - CREWLINK_CHROMA_PERSIST_DIR=/tmp/chroma_test
+      - CREWLINK_DEBUG=false
+    command: >
+      sh -c "pip install pytest && python -m pytest tests/ -v"
+
+  test-postgres:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - CREWLINK_DATABASE_URL=postgresql://crewlink:crewlink@pg:5432/crewlink_test
+      - CREWLINK_CHROMA_PERSIST_DIR=/tmp/chroma_test
+      - CREWLINK_DEBUG=false
+    depends_on:
+      pg:
+        condition: service_healthy
+    command: >
+      sh -c "pip install pytest && python -m pytest tests/ -v"
+
+  pg:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: crewlink
+      POSTGRES_PASSWORD: crewlink
+      POSTGRES_DB: crewlink_test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crewlink -d crewlink_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

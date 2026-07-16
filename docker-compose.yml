@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/crewlinai.db
+      - CHROMA_PERSIST_DIR=./data/chroma_data
+      - DEBUG=true
+    volumes:
+      - ./backend:/app
+      - crewlink_data:/app/data
+    command: sh scripts/startup.sh
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    profiles:
+      - donotstart
+
+  mock-simulator:
+    image: alpine:latest
+    command: echo "Mock simulator placeholder — Phase 3"
+    profiles:
+      - donotstart
+
+volumes:
+  crewlink_data:
