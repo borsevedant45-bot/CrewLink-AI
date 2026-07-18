@@ -8,50 +8,67 @@ on:
     branches: [main, develop]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
+  # pre-flight: validate lockfiles exist before any install step
+  # ----------------------------------------------------------------------
+  pre-flight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check frontend lockfile
+        run: |
+          test -f frontend/package-lock.json || { echo "MISSING: frontend/package-lock.json -- run npm install in frontend/ and commit it"; exit 1; }
+
+  # ----------------------------------------------------------------------
   # lint: ruff (backend) + tsc (frontend type-check as lint proxy)
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
   lint:
+    needs: [pre-flight]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - run: pip install -e "backend/.[dev]"
-      - run: npm install --prefix frontend
+      - run: npm ci --prefix frontend
       - run: ruff check backend/
       - name: Frontend lint (tsc --noEmit)
         run: npm run lint
         working-directory: frontend
 
-  # ──────────────────────────────────────────────────────────────────────
-  # typecheck: mypy (backend) + tsc (frontend)
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
+  # typecheck: mypy (backend)
+  # ----------------------------------------------------------------------
   typecheck:
+    needs: [pre-flight]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
       - run: pip install -e "backend/.[dev]"
-      - run: npm install --prefix frontend
       - run: mypy backend/ --strict
-      - run: npm run lint
-        working-directory: frontend
 
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
   # secret-scan: grep for leaked credentials in frontend dist
   # Doc #6 §2 — "defense in depth: a lightweight secret-scanning step"
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
   secret-scan:
     needs: [lint]
     runs-on: ubuntu-latest
@@ -69,38 +86,12 @@ jobs:
             { echo "FAIL: Secret leaked into frontend bundle"; exit 1; }
           echo "PASS: No secrets found in frontend bundle"
 
-  # ──────────────────────────────────────────────────────────────────────
-  # unit: deterministic tests (no LLM calls)
-  # ──────────────────────────────────────────────────────────────────────
-  unit:
+  # ----------------------------------------------------------------------
+  # backend-unit: deterministic tests (no LLM calls, no Docker)
+  # All tests use SQLite temp files + StubProvider — zero external deps.
+  # ----------------------------------------------------------------------
+  backend-unit:
     needs: [lint, typecheck]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: pip install -e "backend/.[dev]"
-      - run: npm ci --prefix frontend
-      - name: Backend unit tests (no LLM)
-        run: python -m pytest backend/tests/ -m "not llm" --maxfail=1 --tb=line -q
-      - name: Frontend unit tests
-        run: npx vitest run
-        working-directory: frontend
-      - name: Frontend a11y axe-core audit
-        run: npx vitest run tests/a11y.test.tsx tests/a11y-contrast.test.tsx tests/a11y-keyboard.test.tsx
-        working-directory: frontend
-
-  # ──────────────────────────────────────────────────────────────────────
-  # mocked-integration: docker-compose + integration + golden-set tests
-  # LLM_MODE=recorded means the provider-agnostic adapter replays fixtures,
-  # zero network calls.
-  # ──────────────────────────────────────────────────────────────────────
-  mocked-integration:
-    needs: [unit]
     runs-on: ubuntu-latest
     env:
       LLM_MODE: recorded
@@ -109,22 +100,79 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
       - run: pip install -e "backend/.[dev]"
-      - name: Start test stack
-        run: docker compose -f docker-compose.test.yml up -d
-      - name: Integration tests (flows #1-#5)
-        run: python -m pytest backend/tests/integration/ --maxfail=1 --tb=line -q
-      - name: Golden-set tests (15-case set + translation extension)
-        run: python -m pytest backend/tests/test_phase6/test_golden_set.py backend/tests/test_phase7/test_golden_cases_11_12.py backend/tests/test_phase8/test_golden_cases_13_14_15.py backend/tests/test_phase10/test_translation_golden_set.py --maxfail=1 --tb=line -q
-      - name: Stop test stack
+      - name: Backend unit tests (no LLM)
+        run: python -m pytest backend/tests/ -m "not llm" --maxfail=1 --tb=line -q --junitxml=test-results/backend-unit.xml
+      - name: Upload test results
         if: always()
-        run: docker compose -f docker-compose.test.yml down
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-unit-results
+          path: test-results/backend-unit.xml
 
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
+  # frontend: frontend tests + a11y axe-core audit
+  # ----------------------------------------------------------------------
+  frontend:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --prefix frontend
+      - name: Frontend unit tests
+        run: npx vitest run --reporter=dot
+        working-directory: frontend
+      - name: Frontend a11y axe-core audit
+        run: npx vitest run tests/a11y.test.tsx tests/a11y-contrast.test.tsx tests/a11y-keyboard.test.tsx --reporter=dot
+        working-directory: frontend
+      - name: Upload frontend test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: frontend/test-results/
+
+  # ----------------------------------------------------------------------
+  # integration: integration + golden-set tests
+  # LLM_MODE=recorded means StubProvider replays fixtures, zero network.
+  # No Docker needed — all tests use SQLite temp files.
+  # ----------------------------------------------------------------------
+  integration:
+    needs: [backend-unit]
+    runs-on: ubuntu-latest
+    env:
+      LLM_MODE: recorded
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e "backend/.[dev]"
+      - name: Integration tests (flows #1-#5)
+        run: python -m pytest backend/tests/integration/ --maxfail=1 --tb=line -q --junitxml=test-results/integration.xml
+      - name: Golden-set tests (15-case set + translation extension)
+        run: python -m pytest backend/tests/test_phase6/test_golden_set.py backend/tests/test_phase7/test_golden_cases_11_12.py backend/tests/test_phase8/test_golden_cases_13_14_15.py backend/tests/test_phase10/test_translation_golden_set.py --maxfail=1 --tb=line -q --junitxml=test-results/golden-set.xml
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-results
+          path: test-results/
+
+  # ----------------------------------------------------------------------
   # build: verify docker-compose build succeeds
-  # ──────────────────────────────────────────────────────────────────────
+  # ----------------------------------------------------------------------
   build:
-    needs: [mocked-integration, secret-scan]
+    needs: [integration, secret-scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
