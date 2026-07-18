@@ -17,8 +17,8 @@ red()   { echo "  ✗ $1"; ((FAIL++)); }
 echo "=== Smoke Test: $BASE_URL ==="
 
 # ── 1. Health / readiness ──────────────────────────────────────────────────
-HEALTH=$(curl -sf "${BASE_URL}/health" 2>&1 || true)
-if echo "$HEALTH" | grep -q '"status":"ok"'; then
+HEALTH=$(curl -s "${BASE_URL}/health" 2>&1 || true)
+if echo "$HEALTH" | grep -q '"status": *"ok"'; then
   green "GET /health returns status=ok"
 else
   red "GET /health failed: $HEALTH"
