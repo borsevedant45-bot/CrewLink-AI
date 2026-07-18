@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     llm_reasoning_api_key: str = ""
     llm_provider: str = ""
     database_url: str = "sqlite:///./crewlinai.db"
-    jwt_secret_key: str = ""
+    jwt_secret_key: str = "test-secret-key-do-not-use-in-prod"
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 480
 
