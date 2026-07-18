@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from backend.app.core.auth import AuthContext, verify_jwt_token
@@ -85,9 +86,8 @@ def list_documents() -> dict[str, Any]:
 
 
 @router.get("/documents/{doc_id}")
-def get_document(doc_id: str) -> dict[str, Any]:
+def get_document(doc_id: str) -> JSONResponse:
     """Full document content.  Stub — returns not-implemented."""
-    from fastapi.responses import JSONResponse
     return JSONResponse(
         status_code=501,
         content={"error": {"code": "NOT_IMPLEMENTED", "message": f"Document {doc_id} retrieval not yet implemented"}},

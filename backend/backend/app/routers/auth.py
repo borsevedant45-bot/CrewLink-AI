@@ -39,14 +39,19 @@ def login(body: LoginRequest) -> dict[str, Any]:
     if profile is None or not body.pin.strip():
         from fastapi import HTTPException
         raise HTTPException(status_code=401, detail="Invalid badge code or PIN")
-    access_token = create_jwt_token(profile["volunteer_id"], profile["role"], profile["zone_id"])
-    refresh_token = create_jwt_token(profile["volunteer_id"], profile["role"], profile["zone_id"], expiry_seconds=86400)
+    volunteer_id = profile["volunteer_id"]
+    role = profile["role"]
+    zone_id = profile["zone_id"]
+    if not volunteer_id or not role:
+        raise HTTPException(status_code=401, detail="Invalid profile data")
+    access_token = create_jwt_token(volunteer_id, role, zone_id)
+    refresh_token = create_jwt_token(volunteer_id, role, zone_id, expiry_seconds=86400)
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "volunteer_id": profile["volunteer_id"],
-        "role": profile["role"],
-        "zone_id": profile["zone_id"],
+        "volunteer_id": volunteer_id,
+        "role": role,
+        "zone_id": zone_id,
     }
 
 

@@ -29,7 +29,7 @@ def stub_provider() -> StubProvider:
 @pytest.fixture
 def provider(stub_provider: StubProvider) -> LLMProvider:
     """Provide the StubProvider typed as the LLMProvider Protocol."""
-    return stub_provider  # type: ignore[return-value]
+    return stub_provider
 
 
 @pytest.fixture

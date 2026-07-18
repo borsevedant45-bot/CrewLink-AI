@@ -71,12 +71,12 @@ async def retrieve_chunks(query: str, top_k: int = 5) -> list[dict[str, Any]]:
 
     chunks: list[dict[str, Any]] = []
     for i in range(len(results["ids"][0])):
-        distance = results["distances"][0][i]
+        distance = (results["distances"] or [[0.0]])[0][i]
         similarity = 1.0 - distance
         chunks.append({
             "chunk_id": results["ids"][0][i],
-            "text": results["documents"][0][i],
-            "metadata": results["metadatas"][0][i],
+            "text": (results["documents"] or [[""]])[0][i],
+            "metadata": (results["metadatas"] or [[{}]])[0][i],
             "similarity": similarity,
         })
 

@@ -22,7 +22,7 @@ class TestPriorityScorePurity:
     def test_no_side_effects(self) -> None:
         cat = "general"
         density = "LOW"
-        compute_priority_score(category=cat, crowd_density_level=density, queue_wait_minutes=None)
+        compute_priority_score(category=cat, crowd_density_level=density, queue_wait_minutes=None)  # type: ignore[arg-type]
         assert cat == "general"
         assert density == "LOW"
 

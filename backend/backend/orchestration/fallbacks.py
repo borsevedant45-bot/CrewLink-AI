@@ -9,6 +9,7 @@ for UI display.
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from .interfaces import TaskType
 from .schemas import (
@@ -158,7 +159,7 @@ def _shift_summary_fallback() -> ShiftSummary:
 # Registry — one fallback per TaskType
 # ---------------------------------------------------------------------------
 
-FALLBACK_MAP: dict[TaskType, Callable] = {
+FALLBACK_MAP: dict[TaskType, Callable[..., Any]] = {
     TaskType.INCIDENT_CLASSIFICATION: _classify_fallback,
     TaskType.INTENT_ROUTING: _intent_routing_fallback,
     TaskType.TRANSLATION: _translation_fallback,
@@ -171,7 +172,7 @@ FALLBACK_MAP: dict[TaskType, Callable] = {
 class FallbackRegistry:
     """Accessor for fallback handlers."""
 
-    def get(self, task_type: TaskType) -> Callable:
+    def get(self, task_type: TaskType) -> Callable[..., Any]:
         handler = FALLBACK_MAP.get(task_type)
         if handler is None:
             msg = f"No fallback registered for {task_type}"

@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.auth import AuthContext, verify_jwt_token
 from backend.app.core.deps import get_log_callback, get_model_router
-from backend.app.core.state_machine import apply_transition
+from backend.app.core.state_machine import IncidentStatus, apply_transition
 from backend.app.db.session import get_db
 from backend.app.models.incident import Incident as IncidentModel
 from backend.app.services.classifier import classify_incident
@@ -214,9 +214,10 @@ async def update_incident_status(
     if not auth.is_supervisor and auth.zone_id != row.zone_id:
         raise HTTPException(status_code=404, detail="Incident not found")
 
-    old_status = row.status
+    old_status: IncidentStatus = row.status  # type: ignore[assignment]
+    new_status_str: IncidentStatus = body.status  # type: ignore[assignment]
     try:
-        new_status = apply_transition(old_status, body.status)
+        new_status = apply_transition(old_status, new_status_str)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

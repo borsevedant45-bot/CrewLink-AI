@@ -39,7 +39,7 @@ def get_request_id() -> str | None:
     return request_id_var.get(None)
 
 
-def set_request_id(rid: str) -> None:
+def set_request_id(rid: str | None) -> None:
     request_id_var.set(rid)
 
 

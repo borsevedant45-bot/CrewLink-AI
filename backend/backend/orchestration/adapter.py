@@ -63,7 +63,7 @@ def flatten_refs(schema: dict[str, Any]) -> dict[str, Any]:
             return [_resolve(item, _visited) for item in node]
         return node
 
-    return _resolve(result)  # type: ignore[return-value]
+    return _resolve(result)  # type: ignore[no-any-return]
 
 
 def build_tool_definition(
@@ -111,6 +111,6 @@ def extract_tool_call(
     content = response.get("content", [])
     for block in content:
         if isinstance(block, dict) and block.get("type") == "tool_use" and block.get("name") == tool_name:
-                return dict(block["input"])  # type: ignore[arg-type]
+                return dict(block["input"])
     msg = f"No tool_use block found for '{tool_name}' in response"
     raise ValueError(msg)

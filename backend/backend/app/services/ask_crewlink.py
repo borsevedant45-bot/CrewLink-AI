@@ -212,7 +212,7 @@ async def handle_ask_crewlink(
             "KB empty/below threshold: query=%s  retrieved=%d  threshold=%.2f",
             query_for_processing, len(chunks), threshold,
         )
-        fallback_msg = (
+        no_kb_msg = (
             "I couldn't find an answer in the venue guide. "
             "Please ask your zone supervisor or "
             "check at the information desk."
@@ -220,7 +220,7 @@ async def handle_ask_crewlink(
         return AskCrewLinkResult(
             grounded=False,
             confidence=0.0,
-            fallback_message=fallback_msg,
+            fallback_message=no_kb_msg,
         )
 
     # Build context for synthesis

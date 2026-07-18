@@ -167,5 +167,5 @@ class ModelRouter:
         tier = TASK_TIER_MAP[task]
         provider = self._providers.get(tier)
         if provider is None:
-            return _MissingProvider()  # type: ignore[return-value]
+            return _MissingProvider()
         return provider

@@ -63,8 +63,8 @@ def model_router(
     reasoning_provider: StubProvider,
 ) -> ModelRouter:
     return ModelRouter({
-        ModelTier.FAST_CHEAP: fast_cheap_provider,  # type: ignore[dict-item]
-        ModelTier.REASONING: reasoning_provider,  # type: ignore[dict-item]
+        ModelTier.FAST_CHEAP: fast_cheap_provider,
+        ModelTier.REASONING: reasoning_provider,
     })
 
 

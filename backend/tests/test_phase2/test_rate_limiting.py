@@ -91,7 +91,7 @@ class TestRateLimiterBehavior:
         assert not limiter.check(key), "6th request should be blocked for AUTH tier"
 
     def test_reset_after_window(self) -> None:
-        limiter = RateLimiter(window_seconds=0.01)
+        limiter = RateLimiter(window_seconds=1)
         key = ("reset_user", "STANDARD")
         # Exhaust
         for _ in range(120):
