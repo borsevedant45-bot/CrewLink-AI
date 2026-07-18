@@ -1,24 +1,24 @@
 """Pytest fixtures for all phase tests + shared marker registration."""
 
-import pytest
-
 from collections.abc import Generator
 from typing import Any
 
 import pytest
+
 from backend.app.core.auth import create_jwt_token
 
 
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers to suppress PytestUnknownMarkWarning."""
     config.addinivalue_line("markers", "llm: marks tests that exercise an AI call site (golden-set / LLM component tests). Run separately in mocked-integration.")
-from backend.app.db.base import Base
-from backend.app.models import *  # noqa: F401,F403 — register all models
-from backend.app.seed.data import run_seed
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
+
+from backend.app.db.base import Base
+from backend.app.models import *  # noqa: F401,F403 — register all models
+from backend.app.seed.data import run_seed
 
 
 def _make_token(volunteer_id: str, role: str, zone_id: str | None) -> str:

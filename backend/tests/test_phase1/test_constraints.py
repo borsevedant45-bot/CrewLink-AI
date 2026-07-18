@@ -7,12 +7,13 @@ from datetime import UTC, datetime
 from typing import Any
 
 import pytest
-from backend.app.models.crowd_density_reading import CrowdDensityReading
-from backend.app.models.incident import Incident
-from backend.app.models.volunteer_position_ping import VolunteerPositionPing
 from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+
+from backend.app.models.crowd_density_reading import CrowdDensityReading
+from backend.app.models.incident import Incident
+from backend.app.models.volunteer_position_ping import VolunteerPositionPing
 
 NOW = datetime.now(UTC)
 

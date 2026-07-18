@@ -16,21 +16,16 @@ from typing import Any
 
 import pytest
 
+from backend.app.services.classifier import classify_incident
+from backend.app.services.dispatch_recommender import recommend_dispatch
 from backend.orchestration.interfaces import ModelRouter, ModelTier
 from backend.orchestration.logging_ import InvocationRecord
 from backend.orchestration.schemas import (
     Category,
-    DispatchCandidate,
-    DispatchRecommendation,
     IncidentClassification,
     Severity,
 )
-
 from tests.test_orchestration.stub_provider import StubProvider
-
-from backend.app.services.classifier import classify_incident
-from backend.app.services.dispatch_recommender import recommend_dispatch
-
 
 # ======================================================================
 # Shared fixtures

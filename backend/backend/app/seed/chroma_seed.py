@@ -7,8 +7,9 @@ import hashlib
 from typing import Any
 
 import chromadb
-from backend.app.core.config import settings
 from chromadb.api import ClientAPI
+
+from backend.app.core.config import settings
 
 
 def _estimate_tokens(text: str) -> int:

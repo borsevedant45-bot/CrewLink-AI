@@ -28,22 +28,23 @@ app = FastAPI(
 
 @app.on_event("startup")
 def on_startup() -> None:
-    from backend.orchestration.interfaces import ModelRouter, ModelTier
+    from backend.orchestration.interfaces import ModelRouter
     router = ModelRouter({})
     app.state.model_router = router
 
-    from backend.orchestration.logging_ import LogCallback, InvocationRecord
     from sqlalchemy.orm import sessionmaker
-    from backend.app.db.session import engine
+
     from backend.app.db.base import Base
+    from backend.app.db.session import engine
+    from backend.orchestration.logging_ import InvocationRecord
     Base.metadata.create_all(bind=engine)
 
-    _SessionLocal = sessionmaker(bind=engine)
+    _session_local = sessionmaker(bind=engine)
 
     async def _log_cb(record: InvocationRecord) -> None:
         try:
             from backend.app.models.ai_invocation_log import AIInvocationLog
-            session = _SessionLocal()
+            session = _session_local()
             log_entry = AIInvocationLog(
                 invocation_id=record.invocation_id,
                 related_entity_type=record.related_entity_type,
@@ -66,7 +67,7 @@ def on_startup() -> None:
             session.close()
 
     app.state.log_callback = _log_cb
-    app.state.db_session_factory = _SessionLocal
+    app.state.db_session_factory = _session_local
 
 
 class RequestIDMiddleware(BaseHTTPMiddleware):

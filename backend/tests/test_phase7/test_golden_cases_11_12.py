@@ -17,8 +17,6 @@ import pytest
 
 from backend.orchestration.interfaces import ModelRouter, ModelTier
 from backend.orchestration.logging_ import InvocationRecord
-from backend.orchestration.schemas import TranslationResult
-
 from tests.test_orchestration.stub_provider import StubProvider
 
 

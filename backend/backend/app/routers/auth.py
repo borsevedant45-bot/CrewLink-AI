@@ -7,13 +7,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from fastapi import APIRouter, Header
+from pydantic import BaseModel
+
 from backend.app.core.auth import (
     create_jwt_token,
     create_ws_ticket,
     verify_jwt_token,
 )
-from fastapi import APIRouter, Header
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 

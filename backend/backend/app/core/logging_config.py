@@ -45,10 +45,7 @@ def set_request_id(rid: str) -> None:
 
 def _is_sensitive(key: str) -> bool:
     """Check if a field name matches any sensitive-field pattern."""
-    for pattern in SENSITIVE_FIELD_PATTERNS:
-        if pattern.search(key):
-            return True
-    return False
+    return any(pattern.search(key) for pattern in SENSITIVE_FIELD_PATTERNS)
 
 
 def _redact_value(key: str, value: Any) -> Any:

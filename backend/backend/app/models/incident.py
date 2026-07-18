@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from backend.app.db.base import Base
 from sqlalchemy import JSON, Boolean, DateTime, Enum, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from backend.app.db.base import Base
 
 INCIDENT_CATEGORIES = (
     "medical", "lost_fan", "translation", "accessibility",

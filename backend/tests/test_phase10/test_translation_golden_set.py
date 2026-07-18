@@ -19,7 +19,6 @@ import pytest
 
 from backend.orchestration.schemas import TranslationResult
 
-
 # ── Representative high-stakes phrases per supported language  ──
 #  (Doc #8 §4.3, table T1–T8)
 

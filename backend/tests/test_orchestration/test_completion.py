@@ -15,7 +15,7 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from backend.orchestration.completion import complete_with_fallback
 from backend.orchestration.interfaces import LLMProvider, TaskType

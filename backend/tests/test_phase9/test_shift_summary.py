@@ -12,10 +12,6 @@ Per G18: fallback returns schema-conformant ShiftSummary with
 
 from __future__ import annotations
 
-from typing import Any
-
-import pytest
-
 from backend.orchestration.fallbacks import _shift_summary_fallback
 from backend.orchestration.schemas import ShiftSummary
 

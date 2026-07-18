@@ -7,11 +7,12 @@ KB documents + chunks, and seeds Chroma.
 import json
 from datetime import UTC, datetime
 
-from backend.app.db.base import Base
-from backend.app.seed.chroma_seed import get_seed_documents, seed_chroma
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
+
+from backend.app.db.base import Base
+from backend.app.seed.chroma_seed import get_seed_documents, seed_chroma
 
 VENUE_CODE = "founders_field"
 

@@ -1,8 +1,9 @@
 from collections.abc import Generator
 
-from backend.app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+
+from backend.app.core.config import settings
 
 engine = create_engine(settings.database_url, echo=settings.debug)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)

@@ -19,13 +19,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from backend.app.core.deps import get_log_callback, get_model_router
 from backend.app.db.base import Base
 from backend.app.db.session import get_db
-from backend.app.models import *  # noqa: F401,F403 — register all models for Base.metadata
 from backend.app.main import app
+from backend.app.models import *  # noqa: F401,F403 — register all models for Base.metadata
 from backend.app.seed.data import run_seed
 from backend.orchestration.interfaces import ModelRouter, ModelTier
 from backend.orchestration.logging_ import InvocationRecord
 from tests.test_orchestration.stub_provider import StubProvider
-
 
 # ---------------------------------------------------------------------------
 # Session-scoped engine (one per test run)
@@ -219,14 +218,3 @@ def supervisor_token_zone_a_only(_engine: Any) -> str:
         session.close()
     return create_jwt_token("vol_sup_zone_a", "supervisor", "zone_east_concourse")
 
-
-@pytest.fixture
-def supervisor_token_all_zones() -> str:
-    from backend.app.core.auth import create_jwt_token
-    return create_jwt_token("vol_supervisor_1", "supervisor", None)
-
-
-@pytest.fixture
-def supervisor_token_zone_a_only() -> str:
-    from backend.app.core.auth import create_jwt_token
-    return create_jwt_token("vol_sup_zone_a", "supervisor", "zone_east_concourse")

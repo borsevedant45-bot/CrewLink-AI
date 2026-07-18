@@ -7,6 +7,7 @@ Terminal-state immutability: Resolved/Cancelled reject any further transition.
 from __future__ import annotations
 
 import pytest
+
 from backend.app.core.state_machine import (
     IncidentStatus,
     apply_transition,

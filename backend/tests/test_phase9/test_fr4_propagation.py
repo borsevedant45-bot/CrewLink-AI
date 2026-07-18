@@ -13,7 +13,6 @@ import json
 import time
 from typing import Any
 
-import pytest
 from fastapi.testclient import TestClient
 
 from tests.test_orchestration.stub_provider import StubProvider

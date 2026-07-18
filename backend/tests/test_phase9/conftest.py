@@ -8,7 +8,6 @@ import os
 import tempfile
 from collections.abc import Generator
 from typing import Any
-from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -57,13 +56,13 @@ def log_spy() -> list[InvocationRecord]:
 
 
 @pytest.fixture
-def log_callback(log_spy: list[InvocationRecord], _engine: Any) -> Any:
+def log_callback(_engine: Any) -> Any:
     """Test log callback that persists to the test DB."""
-    _SessionLocal = sessionmaker(bind=_engine)
+    _session_local = sessionmaker(bind=_engine)
 
     async def _cb(record: InvocationRecord) -> None:
         from backend.app.models.ai_invocation_log import AIInvocationLog
-        session = _SessionLocal()
+        session = _session_local()
         try:
             log_entry = AIInvocationLog(
                 invocation_id=record.invocation_id,

@@ -4,10 +4,11 @@
 """
 
 import pytest
-from backend.app.models.knowledge_base_chunk import KnowledgeBaseChunk
-from backend.app.models.knowledge_base_document import KnowledgeBaseDocument
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+
+from backend.app.models.knowledge_base_chunk import KnowledgeBaseChunk
+from backend.app.models.knowledge_base_document import KnowledgeBaseDocument
 
 
 @pytest.mark.usefixtures("db_session", "seeded_db")

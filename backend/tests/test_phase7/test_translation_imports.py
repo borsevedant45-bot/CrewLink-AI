@@ -13,9 +13,9 @@ Doc #4 §1 table: "Translation (Chat Bridge) → Fast/Cheap tier only"
 from __future__ import annotations
 
 import ast
-import sys
 from pathlib import Path
-from typing import Any
+
+import pytest
 
 
 def _resolve_module_path(filepath: Path, base_dir: Path) -> str:
@@ -42,10 +42,9 @@ def _collect_imports(filepath: Path) -> set[str]:
             for alias in node.names:
                 top = alias.name.split(".")[0]
                 imports.add(top)
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                top = node.module.split(".")[0]
-                imports.add(top)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            top = node.module.split(".")[0]
+            imports.add(top)
 
     return imports
 

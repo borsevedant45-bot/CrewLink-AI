@@ -4,11 +4,12 @@ Doc #3 §1.4 explicitly warns a type that only works in prod is "a bug waiting t
 """
 
 import pytest
+from sqlalchemy import create_engine, inspect, text
+
 from backend.app.core.config import settings
 from backend.app.db.base import Base
 from backend.app.models import *  # noqa: F401,F403 — register all models
 from backend.app.seed.data import run_seed
-from sqlalchemy import create_engine, inspect, text
 
 
 @pytest.mark.usefixtures("db_session")

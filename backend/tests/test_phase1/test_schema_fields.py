@@ -4,9 +4,10 @@ Fails on any mismatch — extra column, missing column, or wrong type category.
 """
 
 import pytest
-from backend.app.models import *  # noqa: F401,F403 — register all models
 from sqlalchemy import inspect
 from sqlalchemy.orm import Session  # noqa: F401 - used in type annotations
+
+from backend.app.models import *  # noqa: F401,F403 — register all models
 
 # Canonical field map per Doc #3 §1.2 ERD + §2.2 field table + ADDENDUM G5/G6/G9.
 # Each entry: model_name -> {field_name: expected_type_category}

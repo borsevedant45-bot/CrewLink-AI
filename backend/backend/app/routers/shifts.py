@@ -10,8 +10,8 @@ import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from backend.app.core.auth import verify_jwt_token
 from backend.app.core.deps import get_log_callback, get_model_router
@@ -19,7 +19,6 @@ from backend.app.db.session import get_db
 from backend.app.models.crowd_density_reading import CrowdDensityReading
 from backend.app.models.incident import Incident as IncidentModel
 from backend.app.models.shift import Shift as ShiftModel
-from backend.app.models.volunteer import Volunteer as VolunteerModel
 from backend.app.services.prompts import SHIFT_SUMMARY_SYSTEM_PROMPT
 from backend.orchestration.completion import complete_with_fallback
 from backend.orchestration.interfaces import ModelRouter, TaskType

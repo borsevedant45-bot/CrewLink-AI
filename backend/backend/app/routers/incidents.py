@@ -9,8 +9,6 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
-from backend.orchestration.logging_ import InvocationRecord
-
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -27,6 +25,7 @@ from backend.app.services.emergency import broadcast_emergency
 from backend.app.services.kb_retrieval import retrieve_chunks
 from backend.app.services.ws_manager import manager as ws_manager
 from backend.orchestration.interfaces import ModelRouter
+from backend.orchestration.logging_ import InvocationRecord
 
 router = APIRouter(prefix="/api/v1/incidents", tags=["incidents"])
 

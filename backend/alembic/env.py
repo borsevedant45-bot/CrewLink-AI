@@ -3,11 +3,11 @@
 import os
 from logging.config import fileConfig
 
-from backend.app.db.base import Base
-from backend.app.models import *  # noqa: F401,F403 — register all models
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from backend.app.db.base import Base
+from backend.app.models import *  # noqa: F401,F403 — register all models
 
 config = context.config
 if config.config_file_name is not None:

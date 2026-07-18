@@ -6,8 +6,9 @@ Doc #6 §3: "every REST and WS call carries a JWT with role/zone claims checked 
 from __future__ import annotations
 
 import pytest
-from backend.app.core.auth import AuthContext, require_role
 from fastapi.testclient import TestClient
+
+from backend.app.core.auth import AuthContext, require_role
 
 
 class TestAuthContext:

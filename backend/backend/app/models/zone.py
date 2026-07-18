@@ -1,8 +1,9 @@
 from uuid import uuid4
 
-from backend.app.db.base import Base
 from sqlalchemy import Enum, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from backend.app.db.base import Base
 
 
 class Zone(Base):

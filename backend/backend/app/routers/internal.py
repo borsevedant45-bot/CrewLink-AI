@@ -6,9 +6,10 @@ distinct from user JWTs. Rejects user JWTs with 403.
 
 from __future__ import annotations
 
+from fastapi import APIRouter, Depends, Header, status
+
 from backend.app.core.auth import verify_internal_auth
 from backend.app.core.error_handling import CrewLinkError
-from fastapi import APIRouter, Depends, Header, status
 
 router = APIRouter(prefix="/internal", tags=["internal"])
 

@@ -10,12 +10,10 @@ from typing import Any
 
 import pytest
 
+from backend.app.services.dispatch_recommender import recommend_dispatch
 from backend.orchestration.interfaces import ModelRouter, ModelTier
 from backend.orchestration.logging_ import InvocationRecord
-
 from tests.test_orchestration.stub_provider import StubProvider
-
-from backend.app.services.dispatch_recommender import recommend_dispatch
 
 
 @pytest.fixture

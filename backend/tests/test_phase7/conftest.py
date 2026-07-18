@@ -6,6 +6,7 @@ pattern from Phase 6, so chat routes work against the same test DB.
 
 from __future__ import annotations
 
+import tempfile
 from collections.abc import Generator
 from typing import Any
 
@@ -14,27 +15,21 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from backend.app.core.deps import get_log_callback, get_model_router
 from backend.app.db.base import Base
 from backend.app.db.session import get_db
 from backend.app.main import app
-from backend.app.core.deps import get_model_router, get_log_callback
 from backend.app.seed.data import run_seed
-
 from backend.orchestration.interfaces import ModelRouter, ModelTier
 from backend.orchestration.logging_ import InvocationRecord
-
 from tests.test_orchestration.stub_provider import StubProvider
-
-
-import tempfile
 
 
 @pytest.fixture(scope="session")
 def _engine() -> Generator[Any, None, None]:
     """Session-scoped file-based SQLite engine with tables created once."""
-    tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-    tmp.close()
-    db_url = f"sqlite:///{tmp.name}"
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp:
+        db_url = f"sqlite:///{tmp.name}"
     test_engine = create_engine(db_url, echo=False, connect_args={"check_same_thread": False})
     Base.metadata.create_all(bind=test_engine)
     with test_engine.connect() as conn:
