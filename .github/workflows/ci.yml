@@ -23,10 +23,10 @@ jobs:
         with:
           node-version: '22'
       - run: pip install -e "backend/.[dev]"
-      - run: npm ci --prefix frontend
+      - run: npm install --prefix frontend
       - run: ruff check backend/
       - name: Frontend lint (tsc --noEmit)
-        run: npx tsc --noEmit
+        run: npm run lint
         working-directory: frontend
 
   # ──────────────────────────────────────────────────────────────────────
@@ -43,9 +43,10 @@ jobs:
         with:
           node-version: '22'
       - run: pip install -e "backend/.[dev]"
-      - run: npm ci --prefix frontend
+      - run: npm install --prefix frontend
       - run: mypy backend/ --strict
-      - run: npx tsc --noEmit -p frontend/
+      - run: npm run lint
+        working-directory: frontend
 
   # ──────────────────────────────────────────────────────────────────────
   # secret-scan: grep for leaked credentials in frontend dist
