@@ -37,7 +37,7 @@ export function IncidentDetail() {
   const [showReauthPrompt, setShowReauthPrompt] = useState(false);
   const prevStatusRef = useRef<string | null>(null);
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
+  const BASE_URL = '';
 
   useEffect(() => {
     if (!id) return;

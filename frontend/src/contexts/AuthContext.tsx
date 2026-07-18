@@ -11,7 +11,7 @@ import * as api from '@/lib/api';
 const TOKEN_STORAGE_KEY = 'crewlink_auth_tokens';
 
 interface AuthContextValue extends AuthState {
-  login: (badgeCode: string, pin: string) => Promise<void>;
+  login: (badgeCode: string, pin: string) => Promise<LoginResponse>;
   logout: () => void;
   refreshToken: () => Promise<void>;
   getWsTicket: () => Promise<string>;
@@ -92,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshToken: res.refresh_token,
     });
     dispatch({ type: 'LOGIN_SUCCESS', payload: res });
+    return res;
   }, []);
 
   const logout = useCallback(() => {

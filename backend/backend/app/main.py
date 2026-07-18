@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 import logging
 import uuid
+from typing import Any
 
 from fastapi import FastAPI, Query, Request, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from backend.app.core.auth import verify_ws_ticket
@@ -33,6 +35,8 @@ def on_startup() -> None:
     from backend.orchestration.logging_ import LogCallback, InvocationRecord
     from sqlalchemy.orm import sessionmaker
     from backend.app.db.session import engine
+    from backend.app.db.base import Base
+    Base.metadata.create_all(bind=engine)
 
     _SessionLocal = sessionmaker(bind=engine)
 
@@ -80,6 +84,13 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(RequestIDMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins.split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 register_exception_handlers(app)
 
 app.include_router(auth.router)

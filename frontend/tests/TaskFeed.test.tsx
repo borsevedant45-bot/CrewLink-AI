@@ -12,7 +12,6 @@ import React, { useMemo } from 'react';
  */
 
 let mockWsInstances: FakeWebSocket[] = [];
-let mockFetchCalls: Array<{ url: string; options: RequestInit }> = [];
 
 class FakeWebSocket {
   static CONNECTING = 0;
@@ -52,7 +51,6 @@ class FakeWebSocket {
 
 beforeEach(() => {
   mockWsInstances = [];
-  mockFetchCalls = [];
   vi.stubGlobal('WebSocket', FakeWebSocket);
   vi.stubGlobal(
     'fetch',
@@ -74,7 +72,6 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
   mockWsInstances = [];
-  mockFetchCalls = [];
 });
 
 function latestWs(): FakeWebSocket | null {
@@ -93,7 +90,7 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: true,
       getWsTicket: async () => 'mock-ws-ticket',
       refreshToken: async () => {},
-      login: async () => {},
+      login: async () => ({ access_token: 'mock-token', refresh_token: 'mock-refresh', volunteer_id: 'V001', role: 'volunteer' as const, zone_id: 'zone_east_concourse' }),
       logout: () => {},
     }),
     [],

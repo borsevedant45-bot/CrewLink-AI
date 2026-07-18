@@ -116,7 +116,7 @@ function MockAuthProvider({
       isAuthenticated: true,
       getWsTicket: getWsTicket ?? (async () => 'mock-ws-ticket'),
       refreshToken: refreshToken ?? (async () => {}),
-      login: async () => {},
+      login: async () => ({ access_token: 'mock-token', refresh_token: 'mock-refresh', volunteer_id: 'V001', role: 'volunteer' as const, zone_id: 'zone_east_concourse' }),
       logout: () => {},
     }),
     [getWsTicket, refreshToken, accessToken],
@@ -297,8 +297,6 @@ describe('WebSocket hook — offline detection [FR-5]', () => {
       }),
     );
 
-    let resultRef: { isOffline: boolean } = { isOffline: false };
-
     function OfflineConsumer() {
       const { status, isOffline } = useWebSocket({
         channel: 'tasks',
@@ -306,7 +304,6 @@ describe('WebSocket hook — offline detection [FR-5]', () => {
         onUpdate: () => {},
         pollInterval: 100,
       });
-      resultRef = { isOffline };
       return (
         <div>
           <span data-testid="connection-status">{status}</span>

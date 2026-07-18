@@ -22,7 +22,7 @@ export function AskCrewLink() {
     setLoading(true);
     setError(null);
     try {
-      const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
+      const BASE_URL = '';
       const res = await fetch(`${BASE_URL}/knowledge-base/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

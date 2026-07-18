@@ -13,21 +13,52 @@ from backend.app.core.auth import (
     verify_jwt_token,
 )
 from fastapi import APIRouter, Header
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
+class LoginRequest(BaseModel):
+    badge_code: str
+    pin: str
+
+
+DEMO_CREDENTIALS: dict[str, dict[str, str | None]] = {
+    "MARIA": {"volunteer_id": "vol_maria_alvarez", "role": "volunteer", "zone_id": "zone_east_concourse"},
+    "JOHN": {"volunteer_id": "vol_john_chen", "role": "volunteer", "zone_id": "zone_west_concourse"},
+    "AMINA": {"volunteer_id": "vol_amina_walker", "role": "volunteer", "zone_id": "zone_north_concourse"},
+    "CARLOS": {"volunteer_id": "vol_carlos_rodriguez", "role": "volunteer", "zone_id": "zone_south_concourse"},
+    "SUPERVISOR": {"volunteer_id": "vol_devon_price", "role": "supervisor", "zone_id": None},
+}
+
+
 @router.post("/login")
-def login(volunteer_id: str, role: str = "volunteer", zone_id: str | None = None) -> dict[str, Any]:
-    token = create_jwt_token(volunteer_id, role, zone_id)
-    return {"access_token": token, "token_type": "bearer"}
+def login(body: LoginRequest) -> dict[str, Any]:
+    profile = DEMO_CREDENTIALS.get(body.badge_code.upper().strip())
+    if profile is None or not body.pin.strip():
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="Invalid badge code or PIN")
+    access_token = create_jwt_token(profile["volunteer_id"], profile["role"], profile["zone_id"])
+    refresh_token = create_jwt_token(profile["volunteer_id"], profile["role"], profile["zone_id"], expiry_seconds=86400)
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "volunteer_id": profile["volunteer_id"],
+        "role": profile["role"],
+        "zone_id": profile["zone_id"],
+    }
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 
 @router.post("/refresh")
-def refresh(authorization: str = Header(...)) -> dict[str, Any]:
-    ctx = verify_jwt_token(authorization)
-    token = create_jwt_token(ctx.volunteer_id, ctx.role, ctx.zone_id)
-    return {"access_token": token, "token_type": "bearer"}
+def refresh(body: RefreshRequest) -> dict[str, Any]:
+    ctx = verify_jwt_token(f"Bearer {body.refresh_token}")
+    access_token = create_jwt_token(ctx.volunteer_id, ctx.role, ctx.zone_id)
+    refresh_token = create_jwt_token(ctx.volunteer_id, ctx.role, ctx.zone_id, expiry_seconds=86400)
+    return {"access_token": access_token, "refresh_token": refresh_token}
 
 
 @router.post("/ws-ticket")

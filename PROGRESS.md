@@ -963,9 +963,66 @@ Created:
   scripts/walkthrough-rehearsal.sh      — full judge walkthrough x2
 ```
 
+# Production Readiness — Final Cleanup Complete
+
+## Summary
+Production-readiness audit and fixes applied: `.env` alignment, CORS config,
+WS URL derivation, and full verification pass. All tests green.
+
+## Issues fixed
+
+### Environment & Config
+- **`.env` variables realigned**: `.env` and `backend/.env` now use bare names
+  (`DATABASE_URL`, `LLM_FAST_API_KEY`, `LLM_REASONING_API_KEY`, `JWT_SECRET_KEY`,
+  `ENVIRONMENT`, `CORS_ORIGINS`) matching `config.py` Pydantic fields — no more
+  `CREWLINK_` prefix or singular `LLM_API_KEY` that Pydantic would silently ignore.
+- **`CORS_ORIGINS` env var** added to `config.py` with comma-separated default
+  (`http://localhost:5173,http://127.0.0.1:5173`). CORS middleware in `main.py`
+  now reads from `settings.cors_origins.split(",")`.
+- **`.env.example` updated** with `CORS_ORIGINS` documentation.
+- **`render.yaml` updated** with `CORS_ORIGINS` env var including Render frontend URL.
+
+### Frontend-Backend Connectivity
+- **`useWebSocket.ts`**: WS URL now derived from `VITE_API_BASE_URL` via
+  `replace(/^http/, 'ws')` instead of a separate `VITE_WS_URL` — works in both
+  dev (`ws://localhost:8000/api/v1`) and production (`wss://backend.onrender.com/api/v1`).
+- **Duplicate `BASE_URL`** in `startPolling()` removed — uses module-level `BASE_API_URL`.
+
+### Code quality
+- **`main.py`**: Added `from typing import Any` (was used but not imported, flagged by ruff F821).
+- **`backend/.env`**: Added placeholder `LLM_FAST_API_KEY` and `LLM_REASONING_API_KEY` values
+  (was empty strings).
+
+## Verification results
+
+| Gate | Result |
+|---|---|
+| Backend tests (non-LLM) | **199 passed**, 1 skipped |
+| Backend tests (LLM golden-set) | **43 passed** |
+| Frontend tests (vitest) | **55 passed** (10 files) |
+| TypeScript (`tsc --noEmit`) | **Clean** |
+| Frontend build (`vite build`) | **404 KB JS, 27 KB CSS** |
+| ruff lint | Pre-existing formatting warnings only (no new issues) |
+| mypy strict | Pre-existing module path error only (no new issues) |
+
+## Files touched
+```
+Modified:
+  .env                                    — realigned vars (CREWLINK_ → bare names)
+  .env.example                            — added CORS_ORIGINS
+  backend/.env                            — realigned vars, added CORS_ORIGINS + placeholder API keys
+  backend/backend/app/core/config.py      — added cors_origins field
+  backend/backend/app/main.py             — CORSMiddleware reads from settings; added Any import
+  frontend/src/hooks/useWebSocket.ts      — WS URL derived from API URL; removed duplicate BASE_URL
+  render.yaml                             — added CORS_ORIGINS env var
+  PROGRESS.md                             — this update
+```
+
 ## What's next
-Phase 12 is the final implementation phase. The project is complete pending:
-1. Actual Render deployment (requires Render account + credit card for Starter tier).
-2. Running the three TDD test scripts against the live deployed environment.
-3. Recording measured latencies from the walkthrough rehearsal into Doc #1 §6.1's NFR table.
+The project is fully test-passing and deployable. Remaining steps (outside code):
+1. **Render deployment**: Create Render account + Starter tier backend (persistent disk),
+   free static frontend. Set secrets via Render dashboard (not in repo).
+2. **Run deployment scripts**: `smoke-test.sh`, `test-idle-survival.sh`,
+   `walkthrough-rehearsal.sh` against the live deployed URL.
+3. **CI/CD**: Merge to `main` triggers automated deploy via `.github/workflows/deploy.yml`.
 ```

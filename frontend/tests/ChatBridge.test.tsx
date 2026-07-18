@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { ChatBridge } from '../src/pages/ChatBridge';
 import { AuthContext } from '../src/contexts/AuthContext';
 import { LanguageProvider } from '../src/contexts/LanguageContext';
@@ -15,10 +15,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 type FetchResponse = { ok: boolean; json: () => Promise<unknown> };
 
-let mockFetchCalls: Array<{ url: string; options: RequestInit }> = [];
-
 beforeEach(() => {
-  mockFetchCalls = [];
   vi.useFakeTimers();
   // JSDOM doesn't implement scrollIntoView
   Element.prototype.scrollIntoView = vi.fn();
@@ -27,7 +24,6 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
-  mockFetchCalls = [];
 });
 
 function MockAuthProvider({ children }: { children: React.ReactNode }) {
@@ -40,7 +36,7 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: true,
       getWsTicket: async () => 'mock-ws-ticket',
       refreshToken: async () => {},
-      login: async () => {},
+      login: async () => ({ access_token: 'mock-token', refresh_token: 'mock-refresh', volunteer_id: 'V001', role: 'volunteer' as const, zone_id: 'zone_east_concourse' }),
       logout: () => {},
     }),
     [],

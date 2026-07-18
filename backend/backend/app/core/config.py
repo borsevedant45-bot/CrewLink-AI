@@ -1,4 +1,9 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
+
+_HERE = Path(__file__).resolve().parent
+_ENV_FILE = _HERE.parent.parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -22,13 +27,16 @@ class Settings(BaseSettings):
     venue_code: str = "founders_field"
     simulator_auth_token: str = "sim-service-token-change-in-prod"
 
+    # ── CORS (comma-separated origins, or "*" for all) ──────────────────
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
     # ── Thresholds (Doc #4 §2, ADDENDUM G8) ────────────────────────────
     min_grounding_similarity: float = 0.75
     classification_human_review_threshold: float = 0.6
     acknowledgment_sla_critical: int = 90
     acknowledgment_sla_standard: int = 240
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {"env_file": str(_ENV_FILE), "extra": "ignore"}
 
     def model_post_init(self, __context: object) -> None:
         """Fast-fail per Doc #6 §2 in production; allow empty in dev/test.

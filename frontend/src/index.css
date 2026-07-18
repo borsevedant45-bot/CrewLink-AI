@@ -35,6 +35,18 @@
 
   --min-height-thumb: 44px;
   --min-width-thumb: 44px;
+
+  --color-cat-medical: #c62828;
+  --color-cat-lost-fan: #e65100;
+  --color-cat-accessibility: #1565c0;
+  --color-cat-crowd: #e65100;
+  --color-cat-lost-item: #6d6d6d;
+  --color-cat-translation: #2e7d32;
+  --color-cat-general: #6a1b9a;
+  --color-tier-fast: #1565c0;
+  --color-tier-reasoning: #6a1b9a;
+  --color-emergency: #b71c1c;
+  --color-verified: #2e7d32;
 }
 
 .dark {
@@ -51,6 +63,17 @@
   --color-field-source-volunteer: #90caf9;
   --color-field-source-supervisor: #80cbc4;
   --color-field-focus: #66b0ff;
+  --color-cat-medical: #ef5350;
+  --color-cat-lost-fan: #ff9800;
+  --color-cat-accessibility: #42a5f5;
+  --color-cat-crowd: #ff9800;
+  --color-cat-lost-item: #bdbdbd;
+  --color-cat-translation: #66bb6a;
+  --color-cat-general: #ce93d8;
+  --color-tier-fast: #42a5f5;
+  --color-tier-reasoning: #ce93d8;
+  --color-emergency: #f44336;
+  --color-verified: #66bb6a;
 }
 
 *:focus-visible {

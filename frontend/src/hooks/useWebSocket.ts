@@ -8,7 +8,8 @@ import type { ConnectionStatus, WsEvent } from '@/types';
  * Doc #1 FR-3 — polling fallback ≤10s interval
  */
 
-const BASE_WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8000/api/v1';
+const BASE_API_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
+const BASE_WS_URL = BASE_API_URL.replace(/^http/, 'ws');
 const DEFAULT_POLL_INTERVAL = 10_000;
 const RECONNECT_BACKOFF_MS = 3_000;
 
@@ -58,12 +59,10 @@ export function useWebSocket(options: UseWebSocketOptions): UseWebSocketResult {
     setStatus('polling');
     setError(null);
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
-
     pollRef.current = setInterval(async () => {
       if (!accessToken || !mountedRef.current) return;
       try {
-        const res = await fetch(`${BASE_URL}${pollEndpoint}`, {
+        const res = await fetch(`${BASE_API_URL}${pollEndpoint}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         if (!res.ok) throw new Error(`Poll failed: ${res.status}`);

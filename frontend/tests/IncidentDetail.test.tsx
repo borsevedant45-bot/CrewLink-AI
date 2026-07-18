@@ -48,7 +48,7 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: true,
       getWsTicket: async () => 'mock-ws-ticket',
       refreshToken: async () => {},
-      login: async () => {},
+      login: async () => ({ access_token: 'mock-token', refresh_token: 'mock-refresh', volunteer_id: 'V001', role: 'volunteer' as const, zone_id: 'zone_east_concourse' }),
       logout: () => {},
     }),
     [],

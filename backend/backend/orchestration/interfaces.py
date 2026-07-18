@@ -104,6 +104,42 @@ class LLMProvider(Protocol):
 
 
 # ---------------------------------------------------------------------------
+# Sentinel: returned when no real provider is registered so the caller's
+# fallback layer (complete_with_fallback §5) can handle the failure.
+# ---------------------------------------------------------------------------
+
+
+class _MissingProvider:
+    """Duck-typed LLMProvider that raises on any call.
+
+    ``complete_with_fallback`` wraps its provider call in ``try/except`` and
+    routes to deterministic fallbacks (Doc #4 §5).  Raising here instead of in
+    ``ModelRouter.for_task`` ensures the fallback chain is reached.
+    """
+
+    async def complete_structured(
+        self,
+        *,
+        system: str,
+        user: str,
+        schema: type[BaseModel],
+        timeout_s: float,
+    ) -> BaseModel:
+        msg = "No provider registered for this tier — check ModelRouter init"
+        raise RuntimeError(msg)
+
+    async def complete_text(
+        self,
+        *,
+        system: str,
+        user: str,
+        timeout_s: float,
+    ) -> str:
+        msg = "No provider registered for this tier — check ModelRouter init"
+        raise RuntimeError(msg)
+
+
+# ---------------------------------------------------------------------------
 # Router  (Doc #4 §1)
 # ---------------------------------------------------------------------------
 
@@ -121,10 +157,15 @@ class ModelRouter:
         self._providers = providers
 
     def for_task(self, task: TaskType) -> LLMProvider:
-        """Return the provider configured for *task*'s tier."""
+        """Return the provider configured for *task*'s tier.
+
+        Returns ``_MissingProvider`` instead of raising when no real provider
+        is registered, so the caller's ``try/except`` (e.g. in
+        ``complete_with_fallback``) can catch the failure and route to the
+        deterministic fallback per Doc #4 §5.
+        """
         tier = TASK_TIER_MAP[task]
         provider = self._providers.get(tier)
         if provider is None:
-            msg = f"No provider registered for tier {tier!r}"
-            raise ValueError(msg)
+            return _MissingProvider()  # type: ignore[return-value]
         return provider

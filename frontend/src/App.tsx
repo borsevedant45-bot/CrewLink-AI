@@ -10,6 +10,7 @@ import { ChatBridge } from '@/pages/ChatBridge';
 import { AskCrewLink } from '@/pages/AskCrewLink';
 import { SupervisorDashboard } from '@/pages/SupervisorDashboard';
 import { Login } from '@/pages/Login';
+import { DemoHub } from '@/pages/DemoHub';
 
 export default function App() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/demo" element={<DemoHub />} />
               <Route path="*" element={<Navigate to="/tasks" replace />} />
             </Routes>
           </LanguageProvider>
